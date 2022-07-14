@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod_name
+  namespace: namespace
+  labels:
+    custom-label: value
+spec:
+  terminationGracePeriodSeconds: 3600
+  containers:
+    - name: container_name
+      image: image_name
+      ports:
+        - name: port_name
+          containerPort: 10080
+          protocol: TCP
+          env:
+            - name: key
+              value: "value"
+          envFrom:
+            - secretRef:
+                name: secret_name
+            - configMapRef:
+                name: config_map_name
+          volumeMounts:
+            - name: volume-name
+              mountPath: path
+            - name: tz-config
+              mountPath: /etc/localtime
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+  volumes:
+    - name: volume-name
+      persistentVolumeClaim:
+        claimName: claim_name
+    - name: tz-config
+      hostPath:
+        path: /usr/share/zoneinfo/Asia/Ho_Chi_Minh
+        type: File
+

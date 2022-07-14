@@ -1,0 +1,11 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: scaler-name
+spec:
+  scaleTargetRef:
+    kind: ReplicaSet
+    name: replica_name
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50

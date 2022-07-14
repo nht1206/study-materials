@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment_name
+  labels:
+    app: myapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: myapp:tags
+        ports:
+        - containerPort: 80
+      # Indicates whether the container is running
+      livenessProbe:
+        httpGet:
+          path: /live
+          port: probe
+          httpHeaders:
+            - name: Accept
+              value: application/json
+            - name: User-Agent
+              value: MyUserAgent
+            - name: Accept
+              value: ""
+        # This field tells kubelet that should wait 5 seconds before performing the first probe
+        initialDelaySeconds: 5
+        # This field specifies that the kubelet should perform a probe every 5 seconds
+        periodSeconds: 5
+        # Number of seconds after which the probe times out
+        timeoutSeconds: 1
+        # Minimum consecutive successes for the probe to be considered successful after having failed
+        successThreshold: 1
+        # When a probe fails, k8s will try failureThreshold times before giving up
+        failureThreshold: 1
+      # indicates whether the container is ready to respond to requests
+      readinessProbe:
+        httpGet:
+          path: /ready
+          port: probe
+        # this field tells kubelet that should wait 5 seconds before performing the first probe
+        initialDelaySeconds: 5
+        # this field specifies that the kubelet should perform a probe every 5 seconds
+        periodSeconds: 5
+        # Number of seconds after which the probe times out
+        timeoutSeconds: 1
+        # Minimum consecutive successes for the probe to be considered successful after having failed
+        successThreshold: 1
+        # When a probe fails, k8s will try failureThreshold times before giving up
+        failureThreshold: 1
+      # indicates whether the application within the container is started
+      startupProbe:
+        httpGet:
+          path: /startup
+          port: probe
+        # this field tells kubelet that should wait 5 seconds before performing the first probe
+        initialDelaySeconds: 5
+        # this field specifies that the kubelet should perform a probe every 5 seconds
+        periodSeconds: 5
+        # Number of seconds after which the probe times out
+        timeoutSeconds: 1
+        # Minimum consecutive successes for the probe to be considered successful after having failed
+        successThreshold: 1
+        # When a probe fails, k8s will try failureThreshold times before giving up
+        failureThreshold: 1
+  # Specifies the number of seconds the Deployment controller waits before
+  # indicating that the Deployment progress has stalled
+  progressDeadlineSeconds: 10
+  # Specifies the minimum number of seconds 
+  # for which a newly created Pod should be ready without any of its containers crashing
+  # , for it to be considered available
+  minReadySeconds: 0
+  # Specifies how many old ReplicaSets for this Deployment you want to retain
+  revisionHistoryLimit: 10
+  strategy:
+      # Can be Recreate or RollingUpdate
+    type: RollingUpdate
+    rollingUpdate:
+      # Specifies the maximum number of Pods that can be created over the desired number of Pods
+      # Can not be 0 if maxUnavailable is 0
+      maxSurge: 25%
+      # Specifies the maximum number of Pods that can be unavailable during the update process
+      # Can not be 0 if maxSurge is 0
+      maxUnavailable: 10%
+      
+  

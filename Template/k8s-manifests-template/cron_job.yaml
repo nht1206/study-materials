@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cron_job_name
+spec:
+  # specifies schedule expressions
+  # you can use web tools like crontab.guru to create schedule expressions
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cron_job_name
+            image: image
+            imagePullPolicy: IfNotPresent
+            command: write_your_command
+          restartPolicy: OnFailure
+      # There are 2 values allowed: Forbid, Allow
+      # If Forbid is set, a CJ was attempted to be scheduled
+      # when there was a previous still running,
+      # Then it would count as missed
+      concurrencyPolicy: Hybrid
+      # If this field is set to a large value or left unset
+      # And if concurrencyPolicy is set to Allow, the jobs will always run at least once
+      startingDeadlineSeconds: 10

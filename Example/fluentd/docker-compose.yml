@@ -1,0 +1,38 @@
+version: "3"
+services:
+  file-app:
+    container_name: file-app
+    image: alpine
+    volumes:
+      - ./app:/app
+      - ./data/logs:/data/logs
+    command: [/bin/sh, -c, "chmod +x /app/app.sh && /app/app.sh"]
+  fluentd:
+    container_name: fluentd
+    user: root
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/logs:/data/logs
+  elasticsearch: # port 9200
+    image: elasticsearch:7.9.1
+    container_name: elasticsearch
+    environment:
+    - node.name=elasticsearch
+    - cluster.initial_master_nodes=elasticsearch
+    - bootstrap.memory_lock=true
+    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+  kibana:
+    image: kibana:7.9.1
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      

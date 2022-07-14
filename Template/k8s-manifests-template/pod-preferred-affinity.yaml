@@ -1,0 +1,20 @@
+# This means that the pod will prefer a node that has a disktype=ssd label.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod_name
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+            - ssd          
+  containers:
+  - name: pod_name
+    image: image
+    imagePullPolicy: IfNotPresent

@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job_name
+spec:
+  # It is recommended to set this filed
+  # cuz un-managed jobs have a default deletion policy of orphanDependents
+  # causing the pods created by un-managed jobs to be left around
+  # after that job is fully deleted
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: job_name
+        image: image
+        command: write_your_command
+      # there are 2 values allowed: Never or OnFailure
+      restartPolicy: Never
+  # Specifies the number of retries before considering a Job as Failed
+  backoffLimit: 4
+  # If a Job is set an active deadline
+  # no matter how many pods are created,
+  # all of its running pods are terminated
+  activeDeadlineSeconds: 3600

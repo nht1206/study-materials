@@ -1,0 +1,19 @@
+# This means that the pod will get scheduled only on a node that has a disktype=ssd label.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod_name
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+            - ssd          
+  containers:
+  - name: pod_name
+    image: image
+    imagePullPolicy: IfNotPresent

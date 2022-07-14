@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: datalogpod
+spec:
+  containers:
+    - name: alpine
+      image: alpine:latest
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: data-volume
+          mountPath: /logs
+        - name: tz-config
+          mountPath: /etc/localtime
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+        limits:
+          memory: "64Mi"
+          cpu: "250m"
+  volumes:
+    - name: data-volume
+      persistentVolumeClaim:
+        claimName: datalog-pvc
+    - name: tz-config
+      hostPath:
+        path: /usr/share/zoneinfo/Asia/Ho_Chi_Minh
+        type: File
